@@ -1,0 +1,115 @@
+<x-app-layout>
+    <!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Painel User</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+              integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+              crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.4/dist/bootstrap-table.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    </head>
+    
+    <body>
+    @if(session('mensagem'))
+        <div class="alert alert-success">
+            <p>{{ session('mensagem') }}</p>
+        </div>
+    @endif
+    <div class="container">
+        <form action="{{route('addaqc.get')}}" method="get">
+            <button type="submit" class="btn btn-primary">
+                Adicionar Usuario
+            </button>
+        </form>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>PC</th>
+                    <th>NUMERO</th>
+                    <th>Editar</th>
+                    <th>Deletar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $i=1; @endphp
+                @foreach ($tb as $aqc)
+                <tr>
+                    <td>{{$i}}</td>
+                    <td>{{$aqc->PC}}</td>
+                    <td>{{$aqc->TEL_TEL}}</td>
+                    <td>
+                        <button type="button" class="btn btn-success" 
+                                data-toggle="modal" 
+                                data-target="#editModal" 
+                                data-pc="{{ $aqc->PC }}" 
+                                data-tel="{{ $aqc->TEL_TEL }}"
+                                data-id="{{$i}}">Editar</button>
+                    </td>
+                    <td>
+                        <form action="{{ route('tableDelete.post') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="id" value="{{$aqc->TEL_TEL}}">
+                            <button type="submit" class="btn btn-danger">Deletar</button>
+                        </form>
+                    </td>
+                    @php $i++; @endphp
+                @endforeach
+            </tbody>
+        </table>
+    
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Editar dados</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm">
+                            <div class="mb-3">
+                                <label for="editPC" class="form-label">PC</label>
+                                <input type="text" id="editPC" name="pc" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTel" class="form-label">Número</label>
+                                <input type="text" id="editTel" name="tel_tel" class="form-control" required>
+                            </div>
+                            <input type="hidden" name="id" id="dataId">
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Salvar mudanças</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <script>
+            // Preencher o modal com os dados do usuário quando o botão Editar for clicado
+            $('#editModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Botão que abriu o modal
+                var pc = button.data('pc'); // Extrair dados do atributo data-* do botão
+                var tel = button.data('tel'); // Extrair dados do atributo data-* do botão
+                var id = button.data('id'); // Obter o ID do botão
+    
+                var modal = $(this);
+                modal.find('#editPC').val(pc); // Definir o valor do campo PC
+                modal.find('#editTel').val(tel); // Definir o valor do campo Número
+                modal.find('#dataId').val(id); // Definir o ID oculto
+            });
+        </script>
+    
+    </div>
+    </body>
+    
+    </html>
+    </x-app-layout>
+    
